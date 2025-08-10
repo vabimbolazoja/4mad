@@ -13,8 +13,8 @@
   --card-foreground: hsl(20, 14.3%, 4.1%);
   --border: hsl(20, 5.9%, 90%);
   --input: hsl(20, 5.9%, 90%);
-  --primary: hsl(207, 90%, 54%);
-  --primary-foreground: hsl(211, 100%, 99%);
+  --primary: hsl(142, 76%, 36%);
+  --primary-foreground: hsl(0, 0%, 100%);
   --secondary: hsl(60, 4.8%, 95.9%);
   --secondary-foreground: hsl(24, 9.8%, 10%);
   --accent: hsl(60, 4.8%, 95.9%);
@@ -23,13 +23,13 @@
   --destructive-foreground: hsl(60, 9.1%, 97.8%);
   --ring: hsl(20, 14.3%, 4.1%);
   --radius: 0.5rem;
-  
-  /* Custom colors matching the design */
-  --chart-1: hsl(207, 90%, 54%);
-  --chart-2: hsl(142, 76%, 36%);
-  --chart-3: hsl(38, 92%, 50%);
-  --chart-4: hsl(268, 83%, 58%);
-  --chart-5: hsl(340, 82%, 52%);
+  --primary-50: hsl(138, 76%, 97%);
+  --primary-100: hsl(141, 84%, 93%);
+  --primary-500: hsl(142, 71%, 45%);
+  --primary-600: hsl(142, 76%, 36%);
+  --primary-700: hsl(142, 72%, 29%);
+  --emerald-600: hsl(158, 64%, 52%);
+  --emerald-700: hsl(158, 64%, 42%);
 }
 
 .dark {
@@ -43,8 +43,8 @@
   --card-foreground: hsl(0, 0%, 98%);
   --border: hsl(240, 3.7%, 15.9%);
   --input: hsl(240, 3.7%, 15.9%);
-  --primary: hsl(207, 90%, 54%);
-  --primary-foreground: hsl(211, 100%, 99%);
+  --primary: hsl(142, 76%, 36%);
+  --primary-foreground: hsl(0, 0%, 100%);
   --secondary: hsl(240, 3.7%, 15.9%);
   --secondary-foreground: hsl(0, 0%, 98%);
   --accent: hsl(240, 3.7%, 15.9%);
@@ -53,12 +53,6 @@
   --destructive-foreground: hsl(0, 0%, 98%);
   --ring: hsl(240, 4.9%, 83.9%);
   --radius: 0.5rem;
-  
-  --chart-1: hsl(207, 90%, 54%);
-  --chart-2: hsl(142, 76%, 36%);
-  --chart-3: hsl(38, 92%, 50%);
-  --chart-4: hsl(268, 83%, 58%);
-  --chart-5: hsl(340, 82%, 52%);
 }
 
 @layer base {
@@ -71,47 +65,64 @@
   }
 }
 
-/* Custom styles for admin dashboard */
-.sidebar-nav-item {
-  @apply flex items-center space-x-3 px-4 py-3 rounded-lg font-medium transition-colors;
-}
-
-.sidebar-nav-item.active {
-  @apply text-primary bg-blue-50;
-}
-
-.sidebar-nav-item:not(.active) {
-  @apply text-gray-700 hover:bg-gray-100;
-}
-
-.stat-card {
-  @apply bg-white rounded-xl shadow-sm p-6 border border-gray-100;
-}
-
-.btn-primary {
-  @apply bg-primary hover:bg-blue-700 text-white;
-}
-
-.text-success {
-  color: hsl(142, 76%, 36%);
-}
-
-.text-warning {
-  color: hsl(38, 92%, 50%);
-}
-
-.text-error {
-  color: hsl(0, 84.2%, 60.2%);
-}
-
-.bg-success {
-  background-color: hsl(142, 76%, 36%);
-}
-
-.bg-warning {
-  background-color: hsl(38, 92%, 50%);
-}
-
-.bg-error {
-  background-color: hsl(0, 84.2%, 60.2%);
+@layer utilities {
+  .primary-50 {
+    background-color: var(--primary-50);
+  }
+  
+  .primary-100 {
+    background-color: var(--primary-100);
+  }
+  
+  .primary-500 {
+    background-color: var(--primary-500);
+  }
+  
+  .primary-600 {
+    background-color: var(--primary-600);
+  }
+  
+  .primary-700 {
+    background-color: var(--primary-700);
+  }
+  
+  .text-primary-50 {
+    color: var(--primary-50);
+  }
+  
+  .text-primary-100 {
+    color: var(--primary-100);
+  }
+  
+  .text-primary-500 {
+    color: var(--primary-500);
+  }
+  
+  .text-primary-600 {
+    color: var(--primary-600);
+  }
+  
+  .text-primary-700 {
+    color: var(--primary-700);
+  }
+  
+  .border-primary-600 {
+    border-color: var(--primary-600);
+  }
+  
+  .hover\:primary-700:hover {
+    background-color: var(--primary-700);
+  }
+  
+  .hover\:text-primary-600:hover {
+    color: var(--primary-600);
+  }
+  
+  .emerald-600 {
+    background-color: var(--emerald-600);
+  }
+  
+  .emerald-700 {
+    background-color: var(--emerald-700);
+  }
 }

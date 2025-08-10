@@ -1,130 +1,126 @@
-# E-Commerce Admin Dashboard
+# 4marketdays - African Foods E-commerce Platform
 
 ## Overview
 
-This is a full-stack e-commerce admin dashboard application built with a React frontend and Express.js backend. The application provides comprehensive e-commerce functionality including product management, order processing, customer management, delivery management, and Stripe payment integration. It features Replit-based authentication, a PostgreSQL database with Drizzle ORM, and a modern UI built with shadcn/ui components and Tailwind CSS.
-
-## Recent Updates (January 2025)
-
-- **Added Authentication Pages**: Custom login and forgot password pages with modern UI design
-- **Enhanced User Experience**: Added professional authentication flow with form validation and error handling
-- **Added Delivery Management System**: Complete delivery and shipping management with carriers, delivery routes, tracking, and analytics
-- **Enhanced Order Management**: Added tracking numbers, delivery dates, and carrier assignment to orders
-- **Delivery Analytics**: Added comprehensive delivery performance analytics and reporting
-- **User Management System**: Implemented comprehensive role-based access control with super admin, admin, manager, staff, and customer roles
-- **Permission-Based Security**: Added granular permissions system with middleware protection for API routes
-- **Security Improvements**: Made Stripe integration optional and improved error handling throughout the application
-
-## User Preferences
-
-Preferred communication style: Simple, everyday language.
+4marketdays is a full-stack e-commerce platform specializing in authentic African foods for diaspora communities. The application connects African food enthusiasts worldwide with traditional ingredients, spices, and products from their homeland.
 
 ## System Architecture
 
 ### Frontend Architecture
-- **React 18** with TypeScript for the user interface
-- **Vite** as the build tool and development server
-- **Wouter** for client-side routing (lightweight React Router alternative)
-- **TanStack Query** for server state management and API caching
-- **shadcn/ui** component library built on Radix UI primitives
-- **Tailwind CSS** for styling with CSS variables for theming
-- **Stripe React components** for payment processing UI
+- **Framework**: React 18 with TypeScript
+- **Styling**: Tailwind CSS with custom design system
+- **UI Components**: Radix UI primitives with shadcn/ui component library
+- **State Management**: React Context API for cart state, TanStack Query for server state
+- **Routing**: Wouter for client-side routing
+- **Build Tool**: Vite with custom configuration
 
 ### Backend Architecture
-- **Express.js** server with TypeScript
-- **RESTful API** design with structured route handlers
-- **Session-based authentication** using Replit's OIDC provider
-- **PostgreSQL session storage** with connect-pg-simple
-- **Comprehensive error handling** with request/response logging middleware
-- **Stripe server-side integration** for payment processing
+- **Runtime**: Node.js with Express.js
+- **Database**: PostgreSQL with Drizzle ORM
+- **Database Provider**: Neon Database (serverless PostgreSQL)
+- **API Pattern**: RESTful API with Express routes
+- **Session Management**: Express sessions with PostgreSQL store
 
-### Database Design
-- **PostgreSQL** database with **Drizzle ORM** for type-safe database operations
-- **Neon Database** serverless PostgreSQL hosting
-- **Schema-driven approach** with shared TypeScript types between frontend and backend
-- **Migration system** using Drizzle Kit for database versioning
+### Development Environment
+- **Development Server**: Vite dev server with Express backend
+- **Hot Module Replacement**: Vite HMR for frontend development
+- **TypeScript**: Full TypeScript support across frontend and backend
+- **Replit Integration**: Custom Replit cartographer and error modal plugins
 
-Key database tables:
-- `sessions` - Session storage for authentication
-- `users` - User profiles with role-based access control and Stripe integration
-- `products` - Product catalog with inventory management
-- `cartItems` - Shopping cart functionality
-- `orders` and `orderItems` - Order management system with delivery tracking
-- `carriers` - Shipping carrier management (UPS, FedEx, USPS, DHL, etc.)
-- `deliveryRoutes` - Delivery route optimization and cost management
-- `deliveryEvents` - Package tracking and delivery event logging
+## Key Components
 
-### Authentication & Authorization
-- **Custom Authentication Pages** with modern, responsive design
-- **Login interface** with form validation and error handling
-- **Forgot password functionality** with email-based reset flow
-- **Replit Auth** integration using OpenID Connect
-- **Passport.js** with openid-client strategy
-- **Role-based access control** with five distinct roles: super_admin, admin, manager, staff, customer
-- **Granular permissions system** with endpoint-level access control
-- **Permission middleware** protecting sensitive API routes
-- **User management interface** for role assignment and access control
-- **Session persistence** in PostgreSQL
-- **Secure cookie configuration** with HTTP-only and secure flags
+### Database Schema
+The application uses a comprehensive e-commerce schema with the following entities:
+- **Users**: Customer accounts with authentication
+- **Categories**: Product categorization system
+- **Products**: Detailed product information including dual pricing (USD/NGN)
+- **Cart Items**: Shopping cart with session and user support
+- **Orders & Order Items**: Order processing and tracking
+- **Newsletter Subscribers**: Email marketing integration
 
-### Payment Processing
-- **Stripe integration** for payment processing (optional - configurable)
-- **Webhook support** for payment confirmations
-- **Customer and subscription management** via Stripe
-- **Payment Elements** for secure payment forms
-- **Graceful fallback** when Stripe is not configured
+### Frontend Components
+- **Header**: Navigation with cart integration and mobile responsiveness
+- **Hero Section**: Landing page with value propositions
+- **Product Categories**: Visual category browsing
+- **Featured Products**: Highlighted product showcase
+- **Product Cards**: Reusable product display components
+- **Shopping Cart**: Context-based cart management
+- **Newsletter Signup**: Email subscription with form validation
+- **Testimonials**: Customer review display
+- **Trust Indicators**: Security and quality badges
 
-### Delivery Management
-- **Multi-carrier support** for UPS, FedEx, USPS, DHL, and custom carriers
-- **Delivery route optimization** with cost and time estimates
-- **Package tracking** with real-time delivery events
-- **Delivery analytics** including on-time performance and carrier metrics
-- **Automated tracking updates** when orders are shipped
+### API Endpoints
+- `/api/categories` - Product category management
+- `/api/products` - Product catalog and featured items
+- `/api/products/category/:id` - Category-specific product listings
+- `/api/cart` - Shopping cart operations
+- `/api/newsletter/subscribe` - Newsletter subscription
+- `/api/orders` - Order management
 
-### Development & Build
-- **TypeScript** throughout the entire stack for type safety
-- **Shared schema definitions** between client and server
-- **Hot module replacement** in development via Vite
-- **Production build optimization** with esbuild for server bundling
-- **Path aliases** for clean import statements
+## Data Flow
+
+### User Journey
+1. **Browse Products**: Users can explore categories and featured products
+2. **Add to Cart**: Products are added to session-based or user-based cart
+3. **Checkout Process**: Users proceed through order creation
+4. **Newsletter Signup**: Optional email subscription for updates
 
 ### State Management
-- **TanStack Query** for server state with intelligent caching
-- **React hooks** for local component state
-- **Form state management** with React Hook Form and Zod validation
-- **Toast notifications** for user feedback
+- **Cart State**: Managed via React Context with localStorage session tracking
+- **Server State**: TanStack Query handles API data fetching and caching
+- **Form State**: React Hook Form with Zod validation for type safety
 
-### UI/UX Design
-- **Responsive design** with mobile-first approach
-- **Dark/light theme support** via CSS variables
-- **Accessible components** using Radix UI primitives
-- **Professional admin interface** with sidebar navigation
-- **Loading states and error handling** throughout the application
+### Authentication Flow
+- Session-based authentication with PostgreSQL session store
+- Guest shopping cart functionality with session ID tracking
+- User registration and login system
 
 ## External Dependencies
 
-### Core Services
-- **Replit Authentication** - OIDC-based user authentication and session management
-- **Neon Database** - Serverless PostgreSQL database hosting
-- **Stripe** - Payment processing, customer management, and subscriptions
+### Database & Infrastructure
+- **Neon Database**: Serverless PostgreSQL hosting
+- **WebSocket Support**: Real-time database connections via ws library
 
-### Frontend Libraries
-- **@radix-ui** - Accessible UI component primitives
-- **@tanstack/react-query** - Server state management and caching
-- **@stripe/stripe-js** and **@stripe/react-stripe-js** - Stripe payment integration
-- **wouter** - Lightweight React routing
-- **tailwindcss** - Utility-first CSS framework
-- **date-fns** - Date manipulation utilities
-
-### Backend Libraries
-- **express** - Web application framework
-- **passport** and **openid-client** - Authentication middleware
-- **drizzle-orm** and **@neondatabase/serverless** - Database ORM and connection
-- **stripe** - Server-side Stripe integration
-- **express-session** and **connect-pg-simple** - Session management
+### UI & Styling
+- **Radix UI**: Accessible UI primitives
+- **Tailwind CSS**: Utility-first CSS framework
+- **Lucide React**: Icon library
+- **Embla Carousel**: Image carousel functionality
 
 ### Development Tools
-- **vite** - Build tool and development server
-- **typescript** - Type checking and compilation
-- **drizzle-kit** - Database migration and introspection tools
-- **esbuild** - JavaScript bundler for production builds
+- **Drizzle Kit**: Database migration and management
+- **Zod**: Runtime type validation
+- **React Hook Form**: Form management
+- **Date-fns**: Date manipulation utilities
+
+## Deployment Strategy
+
+### Build Process
+1. **Frontend Build**: Vite builds React application to `dist/public`
+2. **Backend Build**: esbuild compiles Express server to `dist/index.js`
+3. **Database Migration**: Drizzle Kit handles schema changes
+
+### Environment Configuration
+- **Development**: Local development with Vite dev server
+- **Production**: Node.js Express server serving static files
+- **Database**: Environment-based DATABASE_URL configuration
+
+### Performance Optimizations
+- **Code Splitting**: Vite automatic code splitting
+- **Image Optimization**: Placeholder system with Unsplash integration
+- **Caching**: TanStack Query provides intelligent caching
+- **Bundle Analysis**: Vite plugin for bundle size monitoring
+
+## Changelog
+
+Changelog:
+- July 06, 2025. Initial setup
+- July 06, 2025. Complete mobile responsiveness implementation
+- July 06, 2025. Navigation system and authentication flow implementation
+- July 06, 2025. Enhanced hover effects with green color scheme
+- July 06, 2025. Added product detail page with full product information
+- July 06, 2025. Created order history page for logged-in users
+
+## User Preferences
+
+Preferred communication style: Simple, everyday language.

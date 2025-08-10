@@ -1,142 +1,145 @@
-import { sql } from 'drizzle-orm';
-import {
-  index,
-  jsonb,
-  pgTable,
-  text,
-  varchar,
-  decimal,
-  integer,
-  timestamp,
-  boolean,
-} from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, decimal, timestamp } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-// Session storage table for Replit Auth
-export const sessions = pgTable(
-  "sessions",
-  {
-    sid: varchar("sid").primaryKey(),
-    sess: jsonb("sess").notNull(),
-    expire: timestamp("expire").notNull(),
-  },
-  (table) => [index("IDX_session_expire").on(table.expire)],
-);
-
-// User storage table for Replit Auth
 export const users = pgTable("users", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  email: varchar("email").unique(),
-  firstName: varchar("first_name"),
-  lastName: varchar("last_name"),
-  profileImageUrl: varchar("profile_image_url"),
-  stripeCustomerId: varchar("stripe_customer_id"),
-  stripeSubscriptionId: varchar("stripe_subscription_id"),
-  role: varchar("role").default("customer"), // super_admin, admin, manager, staff, customer
-  department: varchar("department"), // sales, logistics, customer_service, finance, etc.
-  permissions: jsonb("permissions"), // specific permissions array
-  isActive: boolean("is_active").default(true),
-  lastLoginAt: timestamp("last_login_at"),
+  id: serial("id").primaryKey(),
+  email: text("email").notNull().unique(),
+  fullName: text("full_name").notNull(),
+  phoneNumber: text("phone_number"),
+  password: text("password").notNull(),
+  isVerified: boolean("is_verified").default(false),
   createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// Products table
-export const products = pgTable("products", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+export const categories = pgTable("categories", {
+  id: serial("id").primaryKey(),
   name: text("name").notNull(),
   description: text("description"),
-  price: decimal("price", { precision: 10, scale: 2 }).notNull(),
-  imageUrl: varchar("image_url"),
-  category: varchar("category"),
-  stock: integer("stock").default(0),
-  isActive: boolean("is_active").default(true),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
-// Cart items table
-export const cartItems = pgTable("cart_items", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").notNull().references(() => users.id),
-  productId: varchar("product_id").notNull().references(() => products.id),
-  quantity: integer("quantity").notNull(),
+  imageUrl: text("image_url"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-// Orders table
-export const orders = pgTable("orders", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").notNull().references(() => users.id),
-  status: varchar("status").default("pending"), // pending, processing, shipped, delivered, cancelled
-  totalAmount: decimal("total_amount", { precision: 10, scale: 2 }).notNull(),
-  stripePaymentIntentId: varchar("stripe_payment_intent_id"),
-  shippingAddress: jsonb("shipping_address"),
-  trackingNumber: varchar("tracking_number"),
-  carrierId: varchar("carrier_id").references(() => carriers.id),
-  estimatedDeliveryDate: timestamp("estimated_delivery_date"),
-  actualDeliveryDate: timestamp("actual_delivery_date"),
-  deliveryInstructions: text("delivery_instructions"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
-// Carriers table for delivery management
-export const carriers = pgTable("carriers", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  name: varchar("name").notNull(), // UPS, FedEx, DHL, USPS, etc.
-  code: varchar("code").notNull().unique(), // ups, fedex, dhl, usps
-  trackingUrlTemplate: varchar("tracking_url_template"), // URL template with {trackingNumber} placeholder
-  isActive: boolean("is_active").default(true),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
-// Delivery tracking events
-export const deliveryEvents = pgTable("delivery_events", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  orderId: varchar("order_id").notNull().references(() => orders.id),
-  status: varchar("status").notNull(), // shipped, in_transit, out_for_delivery, delivered, exception
-  location: varchar("location"),
+export const products = pgTable("products", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
   description: text("description"),
-  timestamp: timestamp("timestamp").defaultNow(),
+  priceUsd: decimal("price_usd", { precision: 10, scale: 2 }).notNull(),
+  priceNgn: decimal("price_ngn", { precision: 10, scale: 2 }).notNull(),
+  imageUrl: text("image_url"),
+  weight: decimal("weight", { precision: 8, scale: 2 }), // in kg
+  minOrderQuantity: integer("min_order_quantity").default(1),
+  bagQuantity: integer("bag_quantity"),
+  stockStatus: text("stock_status").default("in_stock"), // in_stock, out_of_stock, low_stock
+  categoryId: integer("category_id").references(() => categories.id),
+  rating: decimal("rating", { precision: 3, scale: 2 }).default("0.00"),
+  reviewCount: integer("review_count").default(0),
+  isFeatured: boolean("is_featured").default(false),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-// Delivery routes for optimization
-export const deliveryRoutes = pgTable("delivery_routes", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  name: varchar("name").notNull(),
-  carrierId: varchar("carrier_id").references(() => carriers.id),
-  region: varchar("region"), // geographical region or postal codes
-  estimatedDays: integer("estimated_days").default(0), // estimated delivery days
-  cost: decimal("cost", { precision: 10, scale: 2 }), // shipping cost
+export const cartItems = pgTable("cart_items", {
+  id: serial("id").primaryKey(),
+  sessionId: text("session_id").notNull(), // for guest users
+  userId: integer("user_id").references(() => users.id), // for registered users
+  productId: integer("product_id").references(() => products.id).notNull(),
+  quantity: integer("quantity").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const newsletterSubscribers = pgTable("newsletter_subscribers", {
+  id: serial("id").primaryKey(),
+  email: text("email").notNull().unique(),
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// Order items table
+export const orders = pgTable("orders", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id),
+  guestEmail: text("guest_email"),
+  totalUsd: decimal("total_usd", { precision: 10, scale: 2 }).notNull(),
+  totalNgn: decimal("total_ngn", { precision: 10, scale: 2 }).notNull(),
+  currency: text("currency").notNull(), // USD or NGN
+  status: text("status").default("pending"), // pending, paid, shipped, delivered, cancelled
+  shippingAddress: text("shipping_address").notNull(),
+  trackingId: text("tracking_id"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export const orderItems = pgTable("order_items", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  orderId: varchar("order_id").notNull().references(() => orders.id),
-  productId: varchar("product_id").notNull().references(() => products.id),
+  id: serial("id").primaryKey(),
+  orderId: integer("order_id").references(() => orders.id).notNull(),
+  productId: integer("product_id").references(() => products.id).notNull(),
   quantity: integer("quantity").notNull(),
-  price: decimal("price", { precision: 10, scale: 2 }).notNull(),
+  priceUsd: decimal("price_usd", { precision: 10, scale: 2 }).notNull(),
+  priceNgn: decimal("price_ngn", { precision: 10, scale: 2 }).notNull(),
 });
 
-// Zod schemas
+// Relations
+export const categoriesRelations = relations(categories, ({ many }) => ({
+  products: many(products),
+}));
+
+export const productsRelations = relations(products, ({ one, many }) => ({
+  category: one(categories, {
+    fields: [products.categoryId],
+    references: [categories.id],
+  }),
+  cartItems: many(cartItems),
+  orderItems: many(orderItems),
+}));
+
+export const usersRelations = relations(users, ({ many }) => ({
+  cartItems: many(cartItems),
+  orders: many(orders),
+}));
+
+export const cartItemsRelations = relations(cartItems, ({ one }) => ({
+  user: one(users, {
+    fields: [cartItems.userId],
+    references: [users.id],
+  }),
+  product: one(products, {
+    fields: [cartItems.productId],
+    references: [products.id],
+  }),
+}));
+
+export const ordersRelations = relations(orders, ({ one, many }) => ({
+  user: one(users, {
+    fields: [orders.userId],
+    references: [users.id],
+  }),
+  orderItems: many(orderItems),
+}));
+
+export const orderItemsRelations = relations(orderItems, ({ one }) => ({
+  order: one(orders, {
+    fields: [orderItems.orderId],
+    references: [orders.id],
+  }),
+  product: one(products, {
+    fields: [orderItems.productId],
+    references: [products.id],
+  }),
+}));
+
+// Schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
   createdAt: true,
-  updatedAt: true,
+});
+
+export const insertCategorySchema = createInsertSchema(categories).omit({
+  id: true,
+  createdAt: true,
 });
 
 export const insertProductSchema = createInsertSchema(products).omit({
   id: true,
   createdAt: true,
-  updatedAt: true,
 });
 
 export const insertCartItemSchema = createInsertSchema(cartItems).omit({
@@ -144,101 +147,32 @@ export const insertCartItemSchema = createInsertSchema(cartItems).omit({
   createdAt: true,
 });
 
+export const insertNewsletterSubscriberSchema = createInsertSchema(newsletterSubscribers).omit({
+  id: true,
+  createdAt: true,
+});
+
 export const insertOrderSchema = createInsertSchema(orders).omit({
   id: true,
   createdAt: true,
-  updatedAt: true,
 });
 
 export const insertOrderItemSchema = createInsertSchema(orderItems).omit({
   id: true,
 });
 
-export const insertCarrierSchema = createInsertSchema(carriers).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
-
-export const insertDeliveryEventSchema = createInsertSchema(deliveryEvents).omit({
-  id: true,
-  createdAt: true,
-});
-
-export const insertDeliveryRouteSchema = createInsertSchema(deliveryRoutes).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
-
-// Role permissions schema
-export const userRoleSchema = z.enum(['super_admin', 'admin', 'manager', 'staff', 'customer']);
-export const userPermissionSchema = z.enum([
-  'users.read', 'users.write', 'users.delete',
-  'products.read', 'products.write', 'products.delete',
-  'orders.read', 'orders.write', 'orders.delete',
-  'delivery.read', 'delivery.write', 'delivery.delete',
-  'analytics.read',
-  'settings.read', 'settings.write',
-  'customers.read', 'customers.write',
-  'payments.read', 'payments.write'
-]);
-
-export const updateUserRoleSchema = z.object({
-  role: userRoleSchema,
-  department: z.string().optional(),
-  permissions: z.array(userPermissionSchema).optional(),
-  isActive: z.boolean().optional(),
-});
-
 // Types
-export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
-export type InsertProduct = z.infer<typeof insertProductSchema>;
+export type InsertUser = z.infer<typeof insertUserSchema>;
+export type Category = typeof categories.$inferSelect;
+export type InsertCategory = z.infer<typeof insertCategorySchema>;
 export type Product = typeof products.$inferSelect;
-export type InsertCartItem = z.infer<typeof insertCartItemSchema>;
+export type InsertProduct = z.infer<typeof insertProductSchema>;
 export type CartItem = typeof cartItems.$inferSelect;
-export type InsertOrder = z.infer<typeof insertOrderSchema>;
+export type InsertCartItem = z.infer<typeof insertCartItemSchema>;
+export type NewsletterSubscriber = typeof newsletterSubscribers.$inferSelect;
+export type InsertNewsletterSubscriber = z.infer<typeof insertNewsletterSubscriberSchema>;
 export type Order = typeof orders.$inferSelect;
-export type InsertOrderItem = z.infer<typeof insertOrderItemSchema>;
+export type InsertOrder = z.infer<typeof insertOrderSchema>;
 export type OrderItem = typeof orderItems.$inferSelect;
-export type InsertCarrier = z.infer<typeof insertCarrierSchema>;
-export type Carrier = typeof carriers.$inferSelect;
-export type InsertDeliveryEvent = z.infer<typeof insertDeliveryEventSchema>;
-export type DeliveryEvent = typeof deliveryEvents.$inferSelect;
-export type InsertDeliveryRoute = z.infer<typeof insertDeliveryRouteSchema>;
-export type DeliveryRoute = typeof deliveryRoutes.$inferSelect;
-
-// Extended types with relations
-export type CartItemWithProduct = CartItem & {
-  product: Product;
-};
-
-export type OrderWithItems = Order & {
-  items: (OrderItem & { product: Product })[];
-  user: User;
-  carrier?: Carrier;
-  deliveryEvents?: DeliveryEvent[];
-};
-
-export type CarrierWithRoutes = Carrier & {
-  routes: DeliveryRoute[];
-};
-
-export type OrderWithDelivery = Order & {
-  items: (OrderItem & { product: Product })[];
-  user: User;
-  carrier?: Carrier;
-  deliveryEvents: DeliveryEvent[];
-  estimatedDeliveryDate?: Date;
-  trackingNumber?: string;
-};
-
-// User management types
-export type UserRole = z.infer<typeof userRoleSchema>;
-export type UserPermission = z.infer<typeof userPermissionSchema>;
-export type UpdateUserRole = z.infer<typeof updateUserRoleSchema>;
-
-export type UserWithPermissions = User & {
-  computedPermissions: UserPermission[];
-};
+export type InsertOrderItem = z.infer<typeof insertOrderItemSchema>;
