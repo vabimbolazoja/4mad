@@ -19,6 +19,7 @@ import {
   Menu,
   X,
   Truck,
+  Cookie,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Logo from "../img/logoSvg.svg"
@@ -43,7 +44,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const typedUser = user as User | undefined;
 
   const handleLogout = () => {
-    window.location.href = "/api/logout";
+    Cookie?.remove()
+    window.location.href = "/login";
   };
 
   return (

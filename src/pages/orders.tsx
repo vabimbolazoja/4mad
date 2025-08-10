@@ -98,7 +98,7 @@ export default function Products() {
         variant: "destructive",
       });
       setTimeout(() => {
-        // window.location.href = "/login";
+        window.location.href = "/login";
       }, 500);
       return;
     }
@@ -123,7 +123,7 @@ export default function Products() {
         variant: "destructive",
       });
       setTimeout(() => {
-        // window.location.href = "/login";
+        window.location.href = "/login";
       }, 500);
     }
   }, [error, toast]);
@@ -186,7 +186,7 @@ export default function Products() {
           variant: "destructive",
         });
         setTimeout(() => {
-          // window.location.href = "/login";
+          window.location.href = "/login";
         }, 500);
         return;
       }
@@ -220,7 +220,7 @@ export default function Products() {
           variant: "destructive",
         });
         setTimeout(() => {
-          // window.location.href = "/login";
+          window.location.href = "/login";
         }, 500);
         return;
       }
@@ -249,7 +249,7 @@ export default function Products() {
           variant: "destructive",
         });
         setTimeout(() => {
-          // window.location.href = "/login";
+          window.location.href = "/login";
         }, 500);
         return;
       }
