@@ -9,7 +9,7 @@ export function useAuth() {
   } = useQuery({
     queryKey: ["authUser"],
     queryFn: async () => {
-      const res = await fetch("http://localhost:7002/api/auth/user", {
+      const res = await fetch("https://4mserve.vercel.app/api/auth/user", {
         credentials: "include", // allow cookies to be sent
       });
 
