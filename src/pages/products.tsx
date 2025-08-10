@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { base_url } from "../config";
 import { Switch } from 'antd'
 import {
   Select,
@@ -101,12 +102,12 @@ export default function Products() {
   }, [isAuthenticated, isLoading, toast]);
 
   const { data: products, isLoading: productsLoading, error } = useQuery<Product[]>({
-    queryKey: ["/api/products"],
+    queryKey: [base_url + "/api/products"],
     retry: false,
   });
 
   const { data: categories, isLoading: categoryLoading, error: erroCats } = useQuery<Product[]>({
-    queryKey: ["/api/admin/categories"],
+    queryKey: [base_url + "/api/admin/categories"],
     retry: false,
   });
 
@@ -133,9 +134,9 @@ export default function Products() {
 
 
   const createMutation = useMutation({
-    mutationFn: (data: typeof formData) => apiRequest("POST", "/api/admin/product", data),
+    mutationFn: (data: typeof formData) => apiRequest("POST", base_url + "/api/admin/product", data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      queryClient.invalidateQueries({ queryKey: [base_url + "/api/products"] });
       toast({
         title: "Success",
         description: "Product created successfully",
@@ -168,9 +169,9 @@ export default function Products() {
 
   const updateMutation = useMutation({
     mutationFn: ({ id, data }: { id: string; data: Partial<typeof formData> }) =>
-      apiRequest("PUT", `/api/admin/product/${id}`, data),
+      apiRequest("PUT", `${base_url}/api/admin/product/${id}`, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      queryClient.invalidateQueries({ queryKey: [base_url + "/api/products"] });
       setEditingProduct(null);
       resetForm();
       toast({
@@ -200,9 +201,9 @@ export default function Products() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => apiRequest("DELETE", `/api/product/${id}`),
+    mutationFn: (id: string) => apiRequest("DELETE", `${base_url}/api/product/${id}`),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      queryClient.invalidateQueries({ queryKey: [base_url + "/api/products"] });
       toast({
         title: "Success",
         description: "Product deleted successfully",

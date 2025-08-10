@@ -9,7 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
 import { useLocation } from "wouter";
 import Logo from "../img/logoSvg.svg"
-
+import {base_url} from "../config"
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -22,7 +22,7 @@ export default function Login() {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const res = await fetch("/api/admin/login", {
+      const res = await fetch(base_url + "/api/admin/login", {
         method: "POST",
         credentials: "include", // important for cookies
         headers: {

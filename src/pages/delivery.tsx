@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from 'antd'
+import {base_url} from "../config"
 import {
   Select,
   SelectContent,
@@ -99,7 +100,7 @@ export default function Products() {
   }, [isAuthenticated, isLoading, toast]);
 
   const { data: products, isLoading: productsLoading, error } = useQuery<Product[]>({
-    queryKey: ["/api/admin/orders-delivery"],
+    queryKey: [base_url + "/api/admin/orders-delivery"],
     retry: false,
   });
 
@@ -155,9 +156,9 @@ export default function Products() {
 
 
   const createMutation = useMutation({
-    mutationFn: (data: typeof formData) => apiRequest("POST", "/api/admin/product", data),
+    mutationFn: (data: typeof formData) => apiRequest("POST", base_url + "/api/admin/product", data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      queryClient.invalidateQueries({ queryKey: [base_url + "/api/products"] });
       toast({
         title: "Success",
         description: "Delivery updated successfully",
@@ -190,9 +191,9 @@ export default function Products() {
 
   const updateMutation = useMutation({
     mutationFn: ({ id, data }: { id: string; data: Partial<typeof formData> }) =>
-      apiRequest("PUT", `/api/admin/orders-delivery-address/${id}`, data),
+      apiRequest("PUT", `${base_url}/api/admin/orders-delivery-address/${id}`, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/orders-delivery"] });
+      queryClient.invalidateQueries({ queryKey: [base_url + "/api/admin/orders-delivery"] });
       setEditingProduct(null);
       setIsAddDialogOpen(false)
       resetForm();
@@ -223,9 +224,9 @@ export default function Products() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => apiRequest("DELETE", `/api/product/${id}`),
+    mutationFn: (id: string) => apiRequest("DELETE", `${base_url}/api/product/${id}`),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      queryClient.invalidateQueries({ queryKey: [base_url + "/api/products"] });
       toast({
         title: "Success",
         description: "Product deleted successfully",

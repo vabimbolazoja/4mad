@@ -41,6 +41,7 @@ import {
 } from "@/components/ui/table";
 import { Plus, Edit, Trash2 } from "lucide-react";
 import MultiUpload from "../components/ui/multiupload"
+import { base_url } from "../config";
 interface Product {
   id: string;
   name: string;
@@ -97,19 +98,19 @@ export default function Products() {
         variant: "destructive",
       });
       setTimeout(() => {
-        window.location.href = "/login";
+        // window.location.href = "/login";
       }, 500);
       return;
     }
   }, [isAuthenticated, isLoading, toast]);
 
   const { data: products, isLoading: productsLoading, error } = useQuery<Product[]>({
-    queryKey: ["/api/admin/orders"],
+    queryKey: [base_url + "/api/admin/orders"],
     retry: false,
   });
 
   const { data: categories, isLoading: categoryLoading, error: erroCats } = useQuery<Product[]>({
-    queryKey: ["/api/admin/categories"],
+    queryKey: [base_url + "/api/admin/categories"],
     retry: false,
   });
 
@@ -122,7 +123,7 @@ export default function Products() {
         variant: "destructive",
       });
       setTimeout(() => {
-        window.location.href = "/login";
+        // window.location.href = "/login";
       }, 500);
     }
   }, [error, toast]);
@@ -165,9 +166,9 @@ export default function Products() {
 
 
   const createMutation = useMutation({
-    mutationFn: (data: typeof formData) => apiRequest("POST", "/api/admin/product", data),
+    mutationFn: (data: typeof formData) => apiRequest("POST", base_url + "/api/admin/product", data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      queryClient.invalidateQueries({ queryKey: [base_url + "/api/products"] });
       toast({
         title: "Success",
         description: "Product created successfully",
@@ -185,7 +186,7 @@ export default function Products() {
           variant: "destructive",
         });
         setTimeout(() => {
-          window.location.href = "/login";
+          // window.location.href = "/login";
         }, 500);
         return;
       }
@@ -200,9 +201,9 @@ export default function Products() {
 
   const updateMutation = useMutation({
     mutationFn: ({ id, data }: { id: string; data: Partial<typeof formData> }) =>
-      apiRequest("PUT", `/api/admin/product/${id}`, data),
+      apiRequest("PUT", `${base_url}/api/admin/product/${id}`, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      queryClient.invalidateQueries({ queryKey: [base_url + "/api/products"] });
       setEditingProduct(null);
       resetForm();
       toast({
@@ -219,7 +220,7 @@ export default function Products() {
           variant: "destructive",
         });
         setTimeout(() => {
-          window.location.href = "/login";
+          // window.location.href = "/login";
         }, 500);
         return;
       }
@@ -234,7 +235,7 @@ export default function Products() {
   const deleteMutation = useMutation({
     mutationFn: (id: string) => apiRequest("DELETE", `/api/product/${id}`),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      queryClient.invalidateQueries({ queryKey: [base_url + "/api/products"] });
       toast({
         title: "Success",
         description: "Product deleted successfully",
@@ -248,7 +249,7 @@ export default function Products() {
           variant: "destructive",
         });
         setTimeout(() => {
-          window.location.href = "/login";
+          // window.location.href = "/login";
         }, 500);
         return;
       }
